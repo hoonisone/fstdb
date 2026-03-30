@@ -92,7 +92,7 @@ class DBFactory(Generic[NodeType, RecordType, DBType]):
         # 이미 구체화된 서브클래스(예: CustomTreeDB)는 인덱싱이 불가능하므로 직접 인스턴스화
         try:
             # 제네릭 클래스인 경우 인덱싱 사용
-            return self.TreeDBClass[NodeType, RecordType](path=path, tree=None, tree_db_context=tree_db_context, tree_context=tree_context, NodeClass=self.NodeClass, RecordClass=self.RecordClass)
+            return self.TreeDBClass(path=path, tree=None, tree_db_context=tree_db_context, tree_context=tree_context, NodeClass=self.NodeClass, RecordClass=self.RecordClass)
         except TypeError:
             # 제네릭이 아닌 구체화된 클래스인 경우 직접 인스턴스화
             return self.TreeDBClass(path=path, tree=None, tree_db_context=tree_db_context, tree_context=tree_context, NodeClass=self.NodeClass, RecordClass=self.RecordClass)

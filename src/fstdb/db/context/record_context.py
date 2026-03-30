@@ -51,11 +51,19 @@ class RecordContext(Generic[NodeType]):
     def get_id_record_dict(self, node: NodeType) -> Dict[int, NodeType]:
         id_record_dict: Dict[int, NodeType] = {}
         for record in self.get_records(node):
-            try:
-                id_record_dict[self.get_id(record)] = record
-            except Exception as e:
-                print(f"Error getting id_record_dict: {e}")
-                continue
+            id = self.get_id(record)
+            if id in id_record_dict:
+                
+                exist_record = id_record_dict[id]
+                exist_file_path = "/".join(exist_record.full_name)
+                cur_file_path = "/".join(record.full_name)
+                print(f"Colision record 1: {exist_file_path}")
+                print(f"Colision record 1: {cur_file_path}")
+                raise ValueError(f"Record with id {id} already exists, it's")
+            id_record_dict[id] = record
+            # except Exception as e:
+            #     print(f"Error getting id_record_dict: {e}")
+            #     continue
 
         return id_record_dict
     
