@@ -23,7 +23,7 @@ class String___ID_Int_Checker(RecordNameChecker):
 
     def __init__(self):
         # 확장자 선택적: 이름___id_숫자 또는 이름___id_숫자.확장자
-        self.name_pattern = re.compile(r'^[a-zA-Z가-힣0-9_]+___id_\d+(\.\w+)?$')
+        self.name_pattern = re.compile(r'^[a-zA-Z가-힣0-9_.+]+___id_\d+(\.\w+)?$')
         self.id_pattern = re.compile(r'___id_(\d+)')
 
 

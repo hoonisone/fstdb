@@ -53,10 +53,17 @@ class _TreeDB(Generic[NodeType, RecordType]):
 
     def get_sub_db(self, name:RecordPath) -> '_TreeDB[NodeType, RecordType]':
         tokens = self.record_context.path_manager.tokenize(name)
-        node = self.tree_context.get_child(self.tree, tokens)
+        try:
+            node = self.tree_context.get_child(self.tree, tokens)
+        except Exception as e:
+            print(e)
+            print(tokens)
+            print(self.tree.full_name)
+            raise ValueError(f"Sub DB with name {name} does not exist")
+
         return _TreeDB(path = None, tree = node, tree_db_context = self.record_context, tree_context = self.tree_context, NodeClass = self.NodeClass, RecordClass = self.RecordClass)
 
-    def create_record(self, name:RecordPath) -> int:
+    def create_record(self, name:RecordPath) -> RecordType:
         # RecordContext에서 레코드 생성
         record = self.record_context.create_record(self.tree, name, self.ids)
         
@@ -67,7 +74,7 @@ class _TreeDB(Generic[NodeType, RecordType]):
         self.records.append(record)
         self.len += 1
         
-        return record_id
+        return self.get_record(record_id)
 
     def remove_record(self, id: int) -> None:
         if id not in self.id_record_dict:
@@ -83,8 +90,9 @@ class _TreeDB(Generic[NodeType, RecordType]):
     def __len__(self) -> int:
         return self.len
 
-    def __contains__(self, id: int) -> bool:
+    def __contains__(self, id: int|str) -> bool:
         return id in self.ids
+    
 
 
 class TreeDB(_TreeDB[NodeType, RecordType]):
@@ -103,18 +111,18 @@ class TreeDB(_TreeDB[NodeType, RecordType]):
         super().__init__(path, tree, tree_db_context, tree_context, NodeClass, RecordClass)
         self.fs_context = FileSystemContext()
     
-    def create_record(self, name: RecordPath) -> int:
+    def create_record(self, name: RecordPath) -> RecordType: 
         """레코드를 생성하고 실제 파일 시스템에 파일/폴더를 생성합니다."""
         # 부모 클래스의 create_record 호출
-        record_id = super().create_record(name)
+        record = super().create_record(name)
         
         # 생성된 레코드 가져오기
-        record = self.get_record(record_id)
+        # record = self.get_record(record_id)
         
         # 실제 파일/폴더 생성
         self.fs_context.create(record.path)
         
-        return record_id
+        return record
     
     def remove_record(self, id: int) -> None:
         """레코드를 제거하고 실제 파일 시스템에서 파일/폴더를 삭제합니다."""
